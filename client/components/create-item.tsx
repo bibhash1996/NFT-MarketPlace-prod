@@ -42,7 +42,7 @@ function MarketPlace() {
   const router = useRouter();
   const [fileUrl, setFileUrl] = useState<string>("");
   const [name, setName] = useState("");
-  const [descripition, setDescription] = useState("");
+  const [description, setDescription] = useState("");
   const [price, setPrice] = useState<number>(0);
 
   const provider = useProvider();
@@ -63,12 +63,31 @@ function MarketPlace() {
     setFileUrl(`https://ipfs.infura.io/ipfs/${fileAdded.path}`);
   };
 
+  const getUpdatedIPFSURL = async () => {
+    try {
+      const fileObject = {
+        name: name,
+        description: description,
+        image: fileUrl,
+      };
+      const addedIpfsFileObject = await ipfsClient.add(
+        JSON.stringify(fileObject)
+      );
+      console.log("ADDED FILE OBJECT : ", addedIpfsFileObject);
+      return `https://ipfs.infura.io/ipfs/${addedIpfsFileObject.path}`;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const createMarketSale = async () => {
-    if (!price || !name || !descripition) return;
+    if (!price || !name || !description) return;
     if (!fileUrl) return;
     const web3 = new Web3(metaMask.provider as any);
     // web3.setProvider(provider.getSigner());
     console.log("WEB3 : ", web3);
+    const updatedFileURL = await getUpdatedIPFSURL();
+
     const accounts = await web3.eth.getAccounts();
     console.log("Accounts : ", accounts);
     if (!accounts.length) return;
@@ -82,7 +101,7 @@ function MarketPlace() {
       NFTMarket.networks[nwId].address
     );
     const response = await nftContract.methods
-      .createToken(fileUrl)
+      .createToken(updatedFileURL)
       .send({ from: accounts[0] });
     console.log("Response create token : ", response);
     const tokenId = response.events["Transfer"]["returnValues"]["tokenId"];
@@ -120,7 +139,7 @@ function MarketPlace() {
           label="Description"
           defaultValue="Description"
           variant="outlined"
-          value={descripition}
+          value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
       </div>
