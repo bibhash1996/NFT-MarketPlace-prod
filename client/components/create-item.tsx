@@ -161,7 +161,7 @@ function MarketPlace() {
         component="label"
         style={{
           width: 350,
-          backgroundColor: "pink",
+          backgroundColor: "#db6071",
           color: "white",
           marginTop: 20,
         }}
@@ -204,7 +204,7 @@ function MarketPlace() {
         onClick={createMarketSale}
         style={{
           width: 350,
-          backgroundColor: "pink",
+          backgroundColor: "#db6071",
           color: "white",
           marginTop: 20,
         }}

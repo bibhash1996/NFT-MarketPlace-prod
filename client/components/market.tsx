@@ -1,4 +1,3 @@
-import Link from "next/link";
 import React, { useState } from "react";
 import {
   makeStyles,
@@ -6,16 +5,38 @@ import {
   createStyles,
   Theme,
   Grid,
+  Button,
 } from "@material-ui/core";
 import { hooks, metaMask } from "../connectors/metamask";
 import Web3 from "web3";
 import axios from "axios";
-// import NFTMarket from "../../build/contracts/NFTMarket.json";
 
 const NFTMarket = require("../../build/contracts/NFTMarket.json");
 const NFT = require("../../build/contracts/NFT.json");
 
-const useStyles = makeStyles((theme: Theme) => createStyles({}));
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      padding: 20,
+      backgroundColor: "rgb(239, 238, 234)",
+      height: "90vh",
+    },
+    nftItem: {
+      padding: 20,
+      borderRadius: 20,
+      display: "flex",
+      justifyContent: "center",
+      // alignItems:'center',
+      backgroundColor: "white",
+      boxShadow: "0 5px 10px -2px #e7e5de",
+      flexDirection: "column",
+    },
+    text: {
+      marginTop: 10,
+      fontSize: "16px",
+    },
+  })
+);
 
 type NFTItem = {
   itemId: string;
@@ -65,7 +86,7 @@ function MarketPlace() {
         const tokenUri = await nftContract.methods.tokenURI(_item[2]).call();
         console.log("Token meta : ", tokenUri);
         const meta = await axios.get(tokenUri);
-        console.log("Metadata : ", meta.data);
+        // console.log("Metadata : ", meta.data);
         return {
           itemId: _item[0],
           nftContract: _item[1],
@@ -74,7 +95,7 @@ function MarketPlace() {
           seller: _item[3],
           sold: _item[6] as boolean,
           tokenId: _item[2],
-          image: meta.data.image,
+          image: meta.data.image || tokenUri,
           name: meta.data.name,
           description: meta.data.description,
         };
@@ -84,13 +105,49 @@ function MarketPlace() {
   };
 
   return (
-    <div>
+    <div className={classes.root}>
       {console.log("NFT Array : ", nftArray)}
       <Grid container>
         {nftArray.map((_nft, index) => (
-          <div />
+          <Grid
+            item
+            md={3}
+            sm={4}
+            xs={12}
+            className={classes.nftItem}
+            key={index}
+          >
+            <img
+              src={_nft.image}
+              style={{ height: 200, borderRadius: "20px" }}
+            />
+            <Typography className={classes.text} noWrap>
+              <span style={{ fontWeight: 700 }}> Name : </span>
+              {_nft.name || "Unnamed"}
+            </Typography>
+            <Typography className={classes.text} noWrap>
+              <span style={{ fontWeight: 700 }}> Description : </span>
+              {_nft.description || "Not available"}
+            </Typography>
+            <Typography className={classes.text} noWrap>
+              <span style={{ fontWeight: 700 }}> Seller : </span>
+              {_nft.seller || "Not available"}
+            </Typography>
+            <Button
+              variant="contained"
+              component="label"
+              onClick={() => {}}
+              style={{
+                backgroundColor: "#db6071",
+                color: "white",
+                marginTop: 10,
+                borderRadius: 10,
+              }}
+            >
+              Buy
+            </Button>
+          </Grid>
         ))}
-        <Grid item md={4} sm={6} xs={12}></Grid>
       </Grid>
     </div>
   );
