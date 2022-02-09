@@ -32,6 +32,13 @@ const useStyles = makeStyles((theme: Theme) =>
       justifyContent: "center",
       padding: "20px",
     },
+    imageContainer: {
+      height: 200,
+      width: 200,
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    },
   })
 );
 
@@ -73,7 +80,6 @@ function MarketPlace() {
       const addedIpfsFileObject = await ipfsClient.add(
         JSON.stringify(fileObject)
       );
-      console.log("ADDED FILE OBJECT : ", addedIpfsFileObject);
       return `https://ipfs.infura.io/ipfs/${addedIpfsFileObject.path}`;
     } catch (error) {
       throw error;
@@ -89,7 +95,6 @@ function MarketPlace() {
     const updatedFileURL = await getUpdatedIPFSURL();
 
     const accounts = await web3.eth.getAccounts();
-    console.log("Accounts : ", accounts);
     if (!accounts.length) return;
     const nwId = await web3.eth.net.getId();
     const nftContract = new web3.eth.Contract(
@@ -103,17 +108,13 @@ function MarketPlace() {
     const response = await nftContract.methods
       .createToken(updatedFileURL)
       .send({ from: accounts[0] });
-    console.log("Response create token : ", response);
     const tokenId = response.events["Transfer"]["returnValues"]["tokenId"];
-    console.log("TokenID : ", tokenId);
     let listingPrice = await marketContract.methods.getListingPrice().call();
     listingPrice = listingPrice.toString();
-    console.log("Listing price : ", web3.utils.fromWei(listingPrice, "ether"));
     // const _listingPrice = web3.utils.fromWei(listingPrice, "ether");
     const marketResponse = await marketContract.methods
       .createMarketItem(NFT.networks[nwId].address, tokenId, price)
       .send({ from: accounts[0], value: listingPrice });
-    console.log("Create market item response : ", marketResponse);
     router.push("/");
   };
 
@@ -185,15 +186,7 @@ function MarketPlace() {
           style={{ marginTop: 8, aspectRatio: "auto" }}
         />
       ) : (
-        <div
-          style={{
-            height: 200,
-            width: 200,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+        <div className={classes.imageContainer}>
           <Typography>No image added</Typography>
         </div>
       )}
