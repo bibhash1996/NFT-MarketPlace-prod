@@ -61,10 +61,10 @@ function MarketPlace() {
   const [nftArray, setNFTArray] = useState<NFTItem[]>([]);
 
   React.useEffect(() => {
-    getMarketNFTs().then();
+    getMyNFTs().then();
   }, [active]);
 
-  const getMarketNFTs = async () => {
+  const getMyNFTs = async () => {
     if (!active) return;
     const web3 = new Web3(metaMask.provider as any);
     // const web3 = new Web3(provider as any);
@@ -78,7 +78,7 @@ function MarketPlace() {
       NFT.abi,
       NFT.networks[nwId].address
     );
-    const response = await contract.methods.fetchMarketItems().call();
+    const response = await contract.methods.fethcMyNFTs().call();
     console.log("Raw Response: ", response);
     // console.log("RESPOSNE : ", JSON.stringify(response));
     const arrayResponse: any[] = JSON.parse(JSON.stringify(response));
@@ -134,19 +134,6 @@ function MarketPlace() {
               <span style={{ fontWeight: 700 }}> Seller : </span>
               {_nft.seller || "Not available"}
             </Typography>
-            <Button
-              variant="contained"
-              component="label"
-              onClick={() => {}}
-              style={{
-                backgroundColor: "#db6071",
-                color: "white",
-                marginTop: 10,
-                borderRadius: 10,
-              }}
-            >
-              Buy
-            </Button>
           </Grid>
         ))}
       </Grid>
